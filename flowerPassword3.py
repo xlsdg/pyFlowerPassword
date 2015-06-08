@@ -8,31 +8,35 @@
 import sys
 import hmac
 
-def calcFlowerPassword(password, key):
-    """计算花密"""
-    md5one = hmac.new(key.encode(encoding="utf-8"), password.encode(encoding="utf-8")).hexdigest()
-    md5two = hmac.new("snow".encode(encoding="utf-8"), md5one.encode(encoding="utf-8")).hexdigest()
-    md5three = hmac.new("kise".encode(encoding="utf-8"), md5one.encode(encoding="utf-8")).hexdigest()
+def generateFPCode(password, key, length = 16):
+    if (1 > len(password.strip())) or (1 > len(key.strip())) or (1 > length) or (length > 32):
+        return;
 
-    rule = list(md5three)
-    source = list(md5two)
+    password = password.encode(encoding="utf-8");
+    key = key.encode(encoding="utf-8");
+
+    hmd5 = hmac.new(key, password).hexdigest().encode(encoding="utf-8");
+    rule = list(hmac.new("kise".encode(encoding="utf-8"), hmd5).hexdigest());
+    source = list(hmac.new("snow".encode(encoding="utf-8"), hmd5).hexdigest());
+
     for i in range(0, 32):
-        if rule[i].isalpha():
+        if not(source[i].isdigit()):
             if rule[i] in "sunlovesnow1990090127xykab":
-                source[i] = source[i].upper()
+                source[i] = source[i].upper();
 
-    if source[0].isalpha():
-        code16 = "".join(source[0:16])
+    code = "".join(source[1:length]);
+    if not(source[0].isdigit()):
+        code = source[0] + code;
     else:
-        code16 = "K" + "".join(source[1:16])
-    #code32 = ''.join(source)
-    return code16
+        code = "K" + code;
+
+    return code;
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        usage = "Usage: %s KEY\n" % (sys.argv[0])
-        sys.stderr.write(usage)
-        sys.exit(1)
+        usage = "Usage: %s KEY\n" % (sys.argv[0]);
+        sys.stderr.write(usage);
+        sys.exit(1);
     else:
-        print calcFlowerPassword("password", sys.argv[1])
+        print(generateFPCode("password", sys.argv[1]));
 
