@@ -1,4 +1,2 @@
-pyFlowerPassword
-================
-
-Flower Password in Python
+# pyFlowerPassword
+Flower Password implementation for Python.
